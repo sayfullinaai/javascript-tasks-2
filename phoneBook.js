@@ -3,7 +3,7 @@
 var phoneBook = []; // Здесь вы храните записи как хотите
 
 function isValidPhone(phone) {
-    if (typeof phone === 'undefined' || typeof phone !== 'string') {
+    if (typeof phone !== 'string') {
         console.log('The phone is not entered or an invalid format');
     } else {
         var regExpOfPhone1 = /^\+?\d{0,3}\s*\(\d{3}\)\s*\d{3}(?:-|\s+)?\d(?:-|\s+)?\d{3}$/;
@@ -13,7 +13,7 @@ function isValidPhone(phone) {
 }
 
 function isValidEmail(email) {
-    if (typeof email === 'undefined' || typeof email !== 'string') {
+    if (typeof  email !== 'string') {
         console.log('The email is not entered or an invalid format');
     } else {
         var regExpOfEmail =/^[^@]+@(?:[^@]+\.)+[^@]+$/i;
@@ -25,8 +25,7 @@ function isValidEmail(email) {
  На вход может прийти что угодно, будьте осторожны.
  */
 module.exports.add = function add(name, phone, email) {
-    if (typeof name === 'undefined' || name === null || name === '' ||
-        (!isValidPhone(phone)) || (!isValidEmail(email))) {
+    if (!name  || (!isValidPhone(phone)) || (!isValidEmail(email))) {
         console.log('Incorrect entered data.');
     } else {
         phoneBook.push({
@@ -44,21 +43,22 @@ module.exports.add = function add(name, phone, email) {
  Поиск ведется по всем полям.
  */
 function doIfEmptyQuery(query) {
-    if (typeof query === 'undefined' || query === null ||
-        query === '') {
-        for (var i = 0; i < phoneBook.length; i++) {
-            console.log(phoneBook[i].name + ' ' + phoneBook[i].phone + ' ' + phoneBook[i].email);
+    if (!query) {
+        return writeMessage(findQuery(query), 'Found')
         }
-    } else {
+    else {
         return false;
     }
 }
 
 function writeMessage(resultQuery, action) {
     if (resultQuery.length !== 0) {
+        var newObj = {};
         for (var i = 0; i < resultQuery.length; i++) {
-            console.log(action + ': ' + resultQuery[i].name + ' ' + resultQuery[i].phone + ' ' +
-                resultQuery[i].email);
+            newObj.name = resultQuery[i].name;
+            newObj.phone =  resultQuery[i].phone;
+            newObj.email = resultQuery[i].email;
+            console.log(action + ': ' + newObj.name +  ', ' + newObj.phone + ', ' + newObj.email);
         }
     } else {
         console.log('Record not found');
@@ -88,7 +88,7 @@ module.exports.find = function find(query) {
 module.exports.remove = function remove(query) {
     var request = findQuery(query);
     for (var i = 0; i < request.length; i++) {
-        phoneBook.slice(i, 1);
+        phoneBook.splice(request[i],1);
     }
     return writeMessage(request, 'Deleted');
 };
@@ -101,7 +101,7 @@ module.exports.importFromCsv = function importFromCsv(filename) {
     var discreteData = data.split('\n');
     var countExport = 0;
     for (var i = 0; i < discreteData.length; i++) {
-        var record = discreteData[i].split(';');
+        var record = discreteData[i].split(',');
         if (module.exports.add(record[0], record[1], record[2])) {
             countExport++;
         }
